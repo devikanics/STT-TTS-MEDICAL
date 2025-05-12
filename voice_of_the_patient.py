@@ -8,6 +8,7 @@ import logging
 import speech_recognition as sr
 from pydub import AudioSegment
 from io import BytesIO
+import requests
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -51,6 +52,7 @@ from groq import Groq
 
 GROQ_API_KEY="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"
 stt_model="whisper-large-v3"
+SARVAM_API_KEY="cf8a2ecf-da18-4aa5-b990-bf884bf2cc0a",
 
 def transcribe_with_groq(stt_model, audio_filepath, GROQ_API_KEY):
     client=Groq(api_key=GROQ_API_KEY)
@@ -63,3 +65,28 @@ def transcribe_with_groq(stt_model, audio_filepath, GROQ_API_KEY):
     )
 
     return transcription.text
+
+def transcribe_with_sarvam(audio_filepath):
+
+   response = requests.post(
+     "https://api.sarvam.ai/speech-to-text",
+     headers={
+    "api-subscription-key": "cf8a2ecf-da18-4aa5-b990-bf884bf2cc0a"
+  },
+  files = {'file', (audio_filepath, open(audio_filepath, "rb")),
+},
+data={
+    'prompt': "convert text to english",
+    'model': "saaras:v2",
+  },
+   )
+   if response.status_code == 200:
+        result = response.json()
+        transcript = result.get("transcript")
+        return transcript
+   else:
+        print(f"Error")
+        return None
+
+
+        

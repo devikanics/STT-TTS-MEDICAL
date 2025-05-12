@@ -21,15 +21,19 @@ def encode_image(image_path):
 from groq import Groq
 
 query="Is there something wrong with my face?"
-model = "llama-3.3-70b-versatile"
+model = "meta-llama/llama-4-maverick-17b-128e-instruct"
 #model="llama-3.2-90b-vision-preview" #Deprecated
 
-def analyze_image_with_query(query, model, encoded_image):
+def analyze_image_with_query(query: str, model: str, encoded_image: str = None):
     client=Groq(api_key=GROQ_API_KEY)  
+    if encoded_image:
+        content = f"{query}\n\n[data:image/jpeg;base64,{encoded_image}]"
+    else:
+        content = query
     messages=[
         {
             "role": "user",
-            "content":  f"{query}\n\n[data:image/jpeg;base64,{encoded_image}]",
+            "content": content,
         }]
     chat_completion=client.chat.completions.create(
         messages=messages,
